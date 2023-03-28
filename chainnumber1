@@ -1,0 +1,39 @@
+git clone git@github.com:alchemyplatform/ecdsa-node.git
+const crypto = require('crypto');
+
+// Generar pares de claves públicas y privadas
+const senderKeys = crypto.generateKeyPairSync('rsa', {
+  modulusLength: 2048,
+});
+
+const recipientKeys = crypto.generateKeyPairSync('rsa', {
+  modulusLength: 2048,
+});
+
+// Crear una transacción
+const transaction = {
+  amount: 1000,
+  sender: 'direccion-origen',
+  recipient: 'direccion-destino',
+}; 
+
+// Firmar la transacción
+const sign = crypto.createSign('SHA256');
+sign.write(JSON.stringify(transaction));
+sign.end();
+const signature = sign.sign(senderKeys.privateKey);
+
+// Verificar la firma digital
+const verify = crypto.createVerify('SHA256');
+verify.write(JSON.stringify(transaction));
+verify.end();
+const isValid = verify.verify(senderKeys.publicKey, signature);
+
+// Ejecutar la transferencia
+if (isValid) {
+  // Actualizar los balances de las cuentas
+  // Registrar la transacción en un registro de transacciones
+} else {
+  // La firma digital no es válida, la transferencia no puede ser ejecutada
+}
+
